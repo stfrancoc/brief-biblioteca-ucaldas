@@ -1,7 +1,7 @@
 # Especificación Formal — Sistema de Préstamo de Libros
 
-> **Autor:** [Tu nombre]
-> **Fecha:** [Fecha del taller]
+> **Autor:** [Jeison Steven Franco - Brahyan Cartagena]
+> **Fecha:** [05/05/2026]
 > **Versión:** 1.0
 > **Brief de origen:** Correo de Diana Restrepo, Coordinadora de Biblioteca
 
@@ -11,7 +11,9 @@
 
 ## 1. Propósito del sistema
 
-[Describe en 3-5 líneas qué hace el sistema, en tus propias palabras. No copies el correo. Reformúlalo como técnico.]
+[
+Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado para llevar el control de los prestamos de libros, el sistema esta diseñado para que puedan consultar el catalogo de libros disponibles y su estado de prestamo,tomar prestamos, devolver, renovar y consultar el historial de prestamos de libros, notificar sobre prestamos vencidos y calcular las multas y multas acumuladas por retraso, que estudiantes tienen prestamos vigentes y su estado de los mismos, permitiendo manejar libros con varios ejemplares. con reglas de negocio que permiten gestionar los prestamos de libros de la biblioteca. 
+]
 
 ---
 
@@ -19,11 +21,27 @@
 
 **Incluido en esta versión:**
 
-- [Lista lo que sí está cubierto, bullet a bullet]
+- [
+-consultar el catologo de libros disponibles y su estado de prestamo
+-tomar prestamos
+-devolver libros 
+-calcular multas
+-renovar prestamos
+-consultar el historial de prestamos 
+-consultar que estudiantes tienen prestamos vigentes
+-notificar sobre prestamos vencidos
+-manejar libros con varios ejemplares
+-consultar prestamos de estudiantes de pregrado
+-consultar prestamos de estudiantes de posgrado
+]
 
 **Explícitamente fuera del alcance:**
 
-- [Lista lo que el correo menciona pero NO se va a implementar. Por ejemplo: el caso de los profesores investigadores.]
+- [Lista lo que el correo menciona pero NO se va a implementar. Por ejemplo: el caso de los profesores investigadores.
+-los profesores investigadores, por ahora no se van a implementar en el sistema
+-el frontend por ahora solo vamos hacer la api rest
+-la persistencia de datos por ahora va ser en memoria
+]
 
 ---
 
@@ -33,22 +51,67 @@
 
 | Campo     | Tipo     | Obligatorio | Descripción   |
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
+| 'id'      | string   | si          | identificador unico del libro
+| 'titulo'  | string   | si          | titulo 
+| 'autor'   | string   | si          | autor 
+| 'isbn'    | string   | si          | numero de isbn del libro 
+| 'editorial'| string   | si          | editorial 
+| 'año_publicacion'| number   | si          | año de publicacion 
+| 'genero'  | string   | si          | genero 
+| 'numero_ejemplares'| number   | si          | numero de ejemplares 
 
 ### Entidad: Ejemplar
 
-[Repite la tabla. Cada libro puede tener varios ejemplares. Decide tú la estructura.]
+[Repite la tabla. Cada libro puede tener varios ejemplares. Decide tú la estructura.
+| Campo     | Tipo     | Obligatorio | Descripción   |
+| `[campo]` | `[tipo]` | sí/no       | [descripción] |
+| 'id'      | string   | si          | identificador unico del ejemplar
+| 'libro_id'| string   | si          | identificador unico del libro
+| 'estado'  | string   | si          | estado del ejemplar
+]
+
 
 ### Entidad: Estudiante
 
-[Tabla de campos]
+[Tabla de campos
+| Campo     | Tipo     | Obligatorio | Descripción   |
+| `[campo]` | `[tipo]` | sí/no       | [descripción] |
+| 'id'      | string   | si          | identificador unico del estudiante
+| 'nombre'  | string   | si          | nombre del estudiante
+| 'programa'| string   | si          | programa academico del estudiante
+| 'semestre'| number   | si          | semestre del estudiante
+| 'tipo'    | string   | si          | tipo de estudiante
+| 'limite_prestamos'| number   | si          | limite de prestamos del estudiante
+| 'multas_pendientes'| number   | si          | multas pendientes del estudiante
+]
 
 ### Entidad: Préstamo
 
-[Tabla de campos. Aquí va estudiante_id, ejemplar_id, fecha_prestamo, fecha_devolucion_esperada, fecha_devolucion_real, estado, etc.]
+[Tabla de campos. Aquí va estudiante_id, ejemplar_id, fecha_prestamo, fecha_devolucion_esperada, fecha_devolucion_real, estado, etc.
+| Campo     | Tipo     | Obligatorio | Descripción   |
+| `[campo]` | `[tipo]` | sí/no       | [descripción] |
+| 'id'      | string   | si          | identificador unico del prestamo
+| 'estudiante_id'| string   | si          | identificador unico del estudiante
+| 'ejemplar_id'| string   | si          | identificador unico del ejemplar
+| 'fecha_prestamo'| string   | si          | fecha en que se realizo el prestamo
+| 'fecha_devolucion_esperada'| string   | si          | fecha en que se esperaba la devolucion del libro
+| 'fecha_devolucion_real'| string   | si          | fecha en que se realizo la devolucion del libro
+| 'estado'  | string   | si          | estado del prestamo
+]
+
 
 ### Entidad: Multa
 
-[Tabla de campos]
+[Tabla de campos
+| Campo     | Tipo     | Obligatorio | Descripción   |
+| `[campo]` | `[tipo]` | sí/no       | [descripción] |
+| 'id'      | string   | si          | identificador unico de la multa
+| 'prestamo_id'| string   | si          | identificador unico del prestamo
+| 'monto'   | number   | si          | monto de la multa
+| 'fecha_pago'| string   | si          | fecha en que se realizo el pago
+| 'estado'  | string   | si          | estado de la multa
+
+]
 
 ### Diagrama de relaciones
 
@@ -59,6 +122,8 @@ Libro 1 --- N Ejemplar
 Estudiante 1 --- N Prestamo
 Ejemplar 1 --- N Prestamo (a lo largo del tiempo)
 Prestamo 0..1 --- 1 Multa
+
+
 ]
 ```
 
@@ -143,13 +208,14 @@ Prestamo 0..1 --- 1 Multa
 | 409 | Conflict | Reglas de negocio violadas (límite alcanzado, duplicado, etc.) |
 | 500 | Internal Server Error | Error no controlado del servidor |
 
+[Si usas otros, agrégalos.]
 
 ---
 
 ## 8. Restricciones técnicas
 
-- **Stack:** [Node.js + Express / Python + FastAPI / etc.]
+- **Stack:** [Node.js + Express]
 - **Persistencia:** datos en memoria. No usar base de datos.
-- **TypeScript** (según tu stack).
+- **TypeScript**.
 - **Sin autenticación** en esta versión.
 - **Sin frontend** en esta versión. Solo API REST.
