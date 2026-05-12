@@ -22,25 +22,32 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 **Incluido en esta versión:**
 
 - [
--consultar el catologo de libros disponibles y su estado de prestamo
--tomar prestamos
--devolver libros 
--calcular multas
--renovar prestamos
--consultar el historial de prestamos 
--consultar que estudiantes tienen prestamos vigentes
--notificar sobre prestamos vencidos
--manejar libros con varios ejemplares
--consultar prestamos de estudiantes de pregrado
--consultar prestamos de estudiantes de posgrado
+- consultar el catalogo de libros disponibles y su estado de prestamo
+- consultar la disponibilidad de ejemplares por libro
+- registrar un prestamo de libro para un estudiante
+- registrar la devolucion de un libro y calcular multa por retraso
+- renovar prestamos vigentes cuando se cumplan las condiciones
+- consultar el historial de prestamos de un estudiante
+- consultar los prestamos vigentes de estudiantes
+- consultar los prestamos vencidos
+- manejar libros con multiples ejemplares independientes
+- diferenciar estudiantes de pregrado y posgrado
+- calcular multas automaticas al devolver libros atrasados
+- bloquear prestamos cuando un estudiante tiene multas pendientes o prestamos vencidos
+- datos en memoria
 ]
 
 **Explícitamente fuera del alcance:**
 
-- [Lista lo que el correo menciona pero NO se va a implementar. Por ejemplo: el caso de los profesores investigadores.
--los profesores investigadores, por ahora no se van a implementar en el sistema
--el frontend por ahora solo vamos hacer la api rest
--la persistencia de datos por ahora va ser en memoria
+- [
+- profesores investigadores y sus reglas de prestamo
+- desarrollo de un frontend o interfaz grafica
+- la base de datos real solo persistencia en memoria en esta version
+- autenticacion y autorizacion de usuarios
+- pagos reales de multas o integracion con pasarela de pagos
+- gestion de ubicaciones fisicas de los libros fuera del catalogo
+- reservas formales con cola de espera persistente
+- notificaciones push, correos electronicos o alertas externas
 ]
 
 ---
@@ -48,7 +55,7 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 ## 3. Modelo de datos
 
 ### Entidad: Libro
-
+[
 | Campo     | Tipo     | Obligatorio | Descripción   |
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
 | 'id'      | string   | si          | identificador unico del libro
@@ -59,14 +66,16 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 | 'año_publicacion'| number   | si          | año de publicacion 
 | 'genero'  | string   | si          | genero 
 | 'numero_ejemplares'| number   | si          | numero de ejemplares 
+| 'alta_demanda' | boolean | si | si el libro es de alta demanda
+]
 
 ### Entidad: Ejemplar
 
-[Repite la tabla. Cada libro puede tener varios ejemplares. Decide tú la estructura.
+[
 | Campo     | Tipo     | Obligatorio | Descripción   |
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
 | 'id'      | string   | si          | identificador unico del ejemplar
-| 'libro_id'| string   | si          | identificador unico del libro
+| 'libro_id'| string   | si          | identificador unico del libro al que pertenece
 | 'estado'  | string   | si          | estado del ejemplar
 ]
 
@@ -87,16 +96,17 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 
 ### Entidad: Préstamo
 
-[Tabla de campos. Aquí va estudiante_id, ejemplar_id, fecha_prestamo, fecha_devolucion_esperada, fecha_devolucion_real, estado, etc.
+[
 | Campo     | Tipo     | Obligatorio | Descripción   |
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
 | 'id'      | string   | si          | identificador unico del prestamo
-| 'estudiante_id'| string   | si          | identificador unico del estudiante
-| 'ejemplar_id'| string   | si          | identificador unico del ejemplar
-| 'fecha_prestamo'| string   | si          | fecha en que se realizo el prestamo
-| 'fecha_devolucion_esperada'| string   | si          | fecha en que se esperaba la devolucion del libro
-| 'fecha_devolucion_real'| string   | si          | fecha en que se realizo la devolucion del libro
-| 'estado'  | string   | si          | estado del prestamo
+| 'estudiante_id'| string | si       | identificador unico del estudiante
+| 'ejemplar_id'| string | si         | identificador unico del ejemplar
+| 'fecha_prestamo'| string   | si    | fecha en que se realizo el prestamo
+| 'fecha_devolucion_esperada'| string | si  | fecha en que se esperaba la devolucion del libro
+| 'fecha_devolucion_real'| string  | si   | fecha en que se realizo la devolucion del libro
+| 'estado'  | string | si  | estado del prestamo
+| 'renovaciones' | number | si | numero de renovaciones realizadas
 ]
 
 
@@ -106,23 +116,22 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 | Campo     | Tipo     | Obligatorio | Descripción   |
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
 | 'id'      | string   | si          | identificador unico de la multa
-| 'prestamo_id'| string   | si          | identificador unico del prestamo
+| 'prestamo_id'| string | si       | identificador unico del prestamo
 | 'monto'   | number   | si          | monto de la multa
-| 'fecha_pago'| string   | si          | fecha en que se realizo el pago
-| 'estado'  | string   | si          | estado de la multa
+| 'fecha_pago'| string | si          | fecha en que se realizo el pago
+| 'estado'  | string   | si          | estado de la multa  (pendiente , pagada)
 
 ]
 
 ### Diagrama de relaciones
 
 ```
-[Dibuja con texto las relaciones. Por ejemplo:
+[
 
 Libro 1 --- N Ejemplar
 Estudiante 1 --- N Prestamo
-Ejemplar 1 --- N Prestamo (a lo largo del tiempo)
-Prestamo 0..1 --- 1 Multa
-
+Ejemplar 1 --- N Prestamo 
+Prestamo 0..1 --- 0..1 Multa
 
 ]
 ```
@@ -133,12 +142,18 @@ Prestamo 0..1 --- 1 Multa
 
 | Método | Ruta | Propósito | Body / Query | Respuesta éxito | Códigos error posibles |
 |---|---|---|---|---|---|
-| `GET` | `/libros` | Listar catálogo | filtros opcionales | `200` con lista | - |
-| `GET` | `/libros/:id` | Detalle libro | - | `200` con objeto | `404` |
-| `POST` | `/prestamos` | Crear préstamo | `{estudiante_id, ejemplar_id}` | `201` con préstamo | `400`, `404`, `409` |
-| ... | ... | ... | ... | ... | ... |
+| `GET` | `/libros` | Listar catálogo de libros | `?genero=`, `?autor=`, `?disponible=` | `200` con lista | `400` |
+| `GET` | `/libros/:id` | Detalle de un libro | - | `200` con objeto | `404` |
+| `GET` | `/libros/:id/ejemplares` | Listar ejemplares de un libro | - | `200` con lista | `404` |
+| `GET` | `/estudiantes/:id/prestamos` | Consultar préstamos de un estudiante | - | `200` con lista | `404` |
+| `GET` | `/prestamos/vigentes` | Consultar préstamos vigentes | - | `200` con lista | - |
+| `GET` | `/prestamos/vencidos` | Consultar préstamos vencidos | - | `200` con lista | - |
+| `POST` | `/prestamos` | Crear préstamo | `{ estudiante_id, ejemplar_id }` | `201` con préstamo creado | `400`, `404`, `409` |
+| `PATCH` | `/prestamos/:id/devolver` | Registrar devolución | `{ fecha_devolucion_real }` | `200` con préstamo actualizado | `400`, `404` |
+| `PATCH` | `/prestamos/:id/renovar` | Renovar préstamo | - | `200` con préstamo actualizado | `400`, `404`, `409` |
+| `GET` | `/estudiantes/:id/historial` | Historial de préstamos y multas | - | `200` con historial | `404` |
 
-[Llena la tabla con todos los endpoints que necesitas. Mínimo 8.]
+
 
 ---
 
@@ -162,18 +177,44 @@ Prestamo 0..1 --- 1 Multa
 - **Acción si cumple:** continuar con el flujo de creación.
 - **Acción si no cumple:** retornar `409 Conflict` con `{error: "limite_prestamos_alcanzado", limite: N, actuales: M}`.
 
-[Llena RN2, RN3, RN4... hasta cubrir todas las reglas del correo.]
+### RN2 — Bloqueo por préstamos vencidos o multas pendientes
 
-### RN2 — [...]
+- **Trigger:** al recibir `POST /prestamos`.
+- **Condición:** el estudiante no debe tener préstamos con `estado = "vencido"` ni `multas_pendientes > 0`.
+- **Acción si cumple:** permitir la creación del préstamo.
+- **Acción si no cumple:** retornar `409 Conflict` con `{ error: "bloqueo_por_deudas", motivo: "prestamo_vencido_o_multas" }`.
 
-[...]
+### RN3 — Plazo de préstamo según tipo de libro
 
-### RN3 — [...]
+- **Trigger:** al crear un préstamo (`POST /prestamos`).
+- **Condición:** si el libro es de `alta_demanda = true`, el préstamo dura 3 días; si no, dura 15 días.
+- **Acción si cumple:** establecer `fecha_devolucion_esperada` según el tipo del libro.
+- **Acción si no cumple:** retornar `400 Bad Request` si el campo `alta_demanda` no está definido.
 
-[...]
+### RN4 — Renovación solo si no hay espera por el libro
+
+- **Trigger:** al recibir `PATCH /prestamos/:id/renovar`.
+- **Condición:** el préstamo debe estar `activo` y no debe existir una espera explícita para el mismo libro. En esta versión, se valida que el ejemplar no sea de alta demanda con otro préstamo vencido en cola.
+- **Acción si cumple:** extender la `fecha_devolucion_esperada` por el mismo plazo original y aumentar `renovaciones`.
+- **Acción si no cumple:** retornar `409 Conflict` con `{ error: "renovacion_no_permitida", motivo: "espera_otro_estudiante" }`.
+
+### RN5 — Ejemplar no disponible para préstamo
+
+- **Trigger:** al recibir `POST /prestamos`.
+- **Condición:** el ejemplar debe existir y tener `estado = "disponible"`.
+- **Acción si cumple:** cambiar el estado del ejemplar a `prestado` y crear el préstamo.
+- **Acción si no cumple:** retornar `409 Conflict` con `{ error: "ejemplar_no_disponible" }`.
+
+### RN6 — Cálculo de multa al devolver un préstamo atrasado
+
+- **Trigger:** al recibir `PATCH /prestamos/:id/devolver`.
+- **Condición:** si `fecha_devolucion_real` es posterior a `fecha_devolucion_esperada`.
+- **Acción si cumple:** calcular multa como `2000 * días_de_retraso`, crear/actualizar la multa asociada y sumar el monto a `multas_pendientes` del estudiante.
+- **Acción si no cumple:** marcar el préstamo como `devuelto` sin generar multa.
 
 
 ---
+
 
 ## 6. Decisiones tomadas (lo que el correo no dice)
 
@@ -185,15 +226,41 @@ Prestamo 0..1 --- 1 Multa
 
 **Ejemplo:**
 
-### D1 — Cálculo de días para multa
+### D1 — Modelo de libro y ejemplar separados
 
-- **Contexto:** el correo no precisa si los días de retraso son calendario o hábiles.
-- **Decisión:** usar días calendario.
-- **Justificación:** es la interpretación más simple y se alinea con lo que la mayoría de bibliotecas hacen.
+- **Contexto:** el correo menciona libros con varios ejemplares, pero no define la estructura de datos.
+- **Decisión:** representar `Libro` como entidad general y `Ejemplar` como entidad física independiente.
+- **Justificación:** permite controlar la disponibilidad de cada unidad física y asegura que un ejemplar prestado no pueda prestarse simultáneamente.
 
-[Mínimo 5 decisiones documentadas.]
+### D2 — Uso de `alta_demanda` como campo booleano
 
-### D2, D3, D4, D5...
+- **Contexto:** el correo describe libros de reserva / alta demanda sin un campo técnico explícito.
+- **Decisión:** agregar `alta_demanda` en la entidad `Libro`.
+- **Justificación:** facilita determinar el plazo de préstamo y aplicar la regla de 3 días contra 15 días.
+
+### D3 — Fechas en formato ISO 8601
+
+- **Contexto:** el correo no señala el formato de fecha a utilizar.
+- **Decisión:** usar ISO 8601 (`YYYY-MM-DD`) para todas las fechas.
+- **Justificación:** es un estándar REST claro, fácil de validar y consistente entre endpoints.
+
+### D4 — Estados concretos para préstamos
+
+- **Contexto:** el correo habla de préstamos vigentes, vencidos y devueltos.
+- **Decisión:** usar los estados `activo`, `vencido` y `devuelto`.
+- **Justificación:** hace la lógica de bloqueo, listado e historial más precisa y evita ambigüedades.
+
+### D5 — Multas pendientes bloquean nuevos préstamos
+
+- **Contexto:** el correo señala que un estudiante con multas pendientes no puede pedir más libros.
+- **Decisión:** tratar `multas_pendientes > 0` como condición de bloqueo en `POST /prestamos`.
+- **Justificación:** refleja el comportamiento esperado y evita que alumnos con mora sigan generando préstamos.
+
+### D6 — Sin autenticación en la primera versión
+
+- **Contexto:** el correo no menciona inicio de sesión ni roles de usuario.
+- **Decisión:** implementar la API sin autenticación ni autorización.
+- **Justificación:** reduce el alcance y permite entregar la solución en el plazo definido.
 
 ---
 
