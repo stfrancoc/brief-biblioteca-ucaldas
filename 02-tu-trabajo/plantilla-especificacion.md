@@ -5,7 +5,6 @@
 > **Versión:** 1.0
 > **Brief de origen:** Correo de Diana Restrepo, Coordinadora de Biblioteca
 
-> Lo que está entre corchetes `[...]` es lo que tú debes escribir.
 
 ---
 
@@ -57,11 +56,12 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 ### Entidad: Libro
 [
 | Campo     | Tipo     | Obligatorio | Descripción   |
+|---|---|---|---|
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
-| 'id'      | string   | si          | identificador unico del libro
-| 'titulo'  | string   | si          | titulo 
-| 'autor'   | string   | si          | autor 
-| 'isbn'    | string   | si          | numero de isbn del libro 
+| 'id'      | string   | si          | identificador unico del libro|
+| 'titulo'  | string   | si          | titulo |
+| 'autor'   | string   | si          | autor |
+| 'isbn'    | string   | si          | numero de isbn del libro |
 | 'editorial'| string   | si          | editorial 
 | 'año_publicacion'| number   | si          | año de publicacion 
 | 'genero'  | string   | si          | genero 
@@ -73,10 +73,11 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 
 [
 | Campo     | Tipo     | Obligatorio | Descripción   |
+|---|---|---|---|
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
-| 'id'      | string   | si          | identificador unico del ejemplar
-| 'libro_id'| string   | si          | identificador unico del libro al que pertenece
-| 'estado'  | string   | si          | estado del ejemplar
+| 'id'      | string   | si          | identificador unico del ejemplar|
+| 'libro_id'| string   | si          | identificador unico del libro al que pertenece|
+| 'estado'  | string   | si          | estado del ejemplar|
 ]
 
 
@@ -84,13 +85,14 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 
 [Tabla de campos
 | Campo     | Tipo     | Obligatorio | Descripción   |
+|---|---|---|---|
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
-| 'id'      | string   | si          | identificador unico del estudiante
-| 'nombre'  | string   | si          | nombre del estudiante
-| 'programa'| string   | si          | programa academico del estudiante
-| 'semestre'| number   | si          | semestre del estudiante
-| 'tipo'    | string   | si          | tipo de estudiante
-| 'limite_prestamos'| number   | si          | limite de prestamos del estudiante
+| 'id'      | string   | si          | identificador unico del estudiante|
+| 'nombre'  | string   | si          | nombre del estudiante|
+| 'programa'| string   | si          | programa academico del estudiante|
+| 'semestre'| number   | si          | semestre del estudiante|
+| 'tipo'    | string   | si          | tipo de estudiante|
+| 'limite_prestamos'| number   | si          | limite de prestamos del estudiante|
 | 'multas_pendientes'| number   | si          | multas pendientes del estudiante
 ]
 
@@ -98,13 +100,14 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 
 [
 | Campo     | Tipo     | Obligatorio | Descripción   |
+|---|---|---|---|
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
-| 'id'      | string   | si          | identificador unico del prestamo
-| 'estudiante_id'| string | si       | identificador unico del estudiante
-| 'ejemplar_id'| string | si         | identificador unico del ejemplar
-| 'fecha_prestamo'| string   | si    | fecha en que se realizo el prestamo
-| 'fecha_devolucion_esperada'| string | si  | fecha en que se esperaba la devolucion del libro
-| 'fecha_devolucion_real'| string  | si   | fecha en que se realizo la devolucion del libro
+| 'id'      | string   | si          | identificador unico del prestamo |
+| 'estudiante_id'| string | si       | identificador unico del estudiante |
+| 'ejemplar_id'| string | si         | identificador unico del ejemplar |
+| 'fecha_prestamo'| string   | si    | fecha en que se realizo el prestamo |
+| 'fecha_devolucion_esperada'| string | si  | fecha en que se esperaba la devolucion del libro |
+| 'fecha_devolucion_real'| string  | si   | fecha en que se realizo la devolucion del libro |
 | 'estado'  | string | si  | estado del prestamo
 | 'renovaciones' | number | si | numero de renovaciones realizadas
 ]
@@ -114,12 +117,13 @@ Es un sistema de gestion de prestamos de libros de la biblioteca, esta diseñado
 
 [Tabla de campos
 | Campo     | Tipo     | Obligatorio | Descripción   |
+|---|---|---|---|
 | `[campo]` | `[tipo]` | sí/no       | [descripción] |
-| 'id'      | string   | si          | identificador unico de la multa
-| 'prestamo_id'| string | si       | identificador unico del prestamo
-| 'monto'   | number   | si          | monto de la multa
-| 'fecha_pago'| string | si          | fecha en que se realizo el pago
-| 'estado'  | string   | si          | estado de la multa  (pendiente , pagada)
+| 'id'      | string   | si          | identificador unico de la multa |
+| 'prestamo_id'| string | si       | identificador unico del prestamo |
+| 'monto'   | number   | si          | monto de la multa |
+| 'fecha_pago'| string | si          | fecha en que se realizo el pago |
+| 'estado'  | string   | si          | estado de la multa  (pendiente , pagada) |
 
 ]
 
