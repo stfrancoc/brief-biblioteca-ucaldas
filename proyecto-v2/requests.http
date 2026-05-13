@@ -1,0 +1,51 @@
+### Flujo de Prueba - Sistema de Biblioteca v2
+
+@baseUrl = http://localhost:3000
+
+### 1. Consultar Catálogo Inicial (Ver IDs de Libros y Ejemplares)
+GET {{baseUrl}}/libros
+
+### 2. Realizar Préstamo Exitoso (Usar IDs del paso 1 y Estudiante PRE-001)
+# Copia un ejemplarId del paso anterior
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": "ID_ESTUDIANTE_PRE_001",
+  "ejemplarId": "ID_EJEMPLAR_DISPONIBLE"
+}
+
+### 3. Devolver Libro con Retraso (Simular Multa)
+# El ID del préstamo viene en la respuesta del paso 2
+# Si no envías fechaDevolucionReal, usa la actual. 
+# Para probar multa, podrías modificar el seed o pasar una fecha futura si el sistema lo permitiera.
+PATCH {{baseUrl}}/prestamos/ID_PRESTAMO/devolucion
+Content-Type: application/json
+
+{
+  "fechaDevolucionReal": "2026-12-31T10:00:00Z"
+}
+
+### 4. Consultar Historial (Verificar saldoMultas > 0)
+GET {{baseUrl}}/estudiantes/ID_ESTUDIANTE_PRE_001/historial
+
+### 5. Intentar Nuevo Préstamo (Debe fallar 403 - Estudiante Bloqueado)
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": "ID_ESTUDIANTE_PRE_001",
+  "ejemplarId": "OTRO_ID_EJEMPLAR"
+}
+
+### 6. Pagar Multas
+POST {{baseUrl}}/estudiantes/ID_ESTUDIANTE_PRE_001/pagar-multas
+
+### 7. Reintentar Préstamo (Ahora debe ser exitoso)
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": "ID_ESTUDIANTE_PRE_001",
+  "ejemplarId": "OTRO_ID_EJEMPLAR"
+}
