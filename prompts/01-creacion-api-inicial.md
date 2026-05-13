@@ -34,19 +34,19 @@ Creé la carpeta `proyecto-v1`, inicialicé el proyecto con `npm init -y` e inst
 
 **¿La respuesta cumplió con lo que pedí?**
 
-- [ ] Completamente.
+- [x] Completamente.
 - [ ] Parcialmente. Faltó: [...]
 - [ ] No, se desvió. Hizo: [...]
 
 **¿La acepté tal cual o la modifiqué?**
 
-- [ ] Tal cual.
+- [x] Tal cual.
 - [ ] La modifiqué a mano. Cambios: [...]
 - [ ] Le pedí corrección con un prompt nuevo (ver prompt #[N+1]).
 - [ ] La rechacé completamente. Razón: [...]
 
 **¿Qué aprendí de esta interacción?**
 
-[ ]
+[ fue existoso hasta cierto punto, pero considero que el resultado se puede mejorar demasiado ademas de que no es muy escalable lo que se genero]
 
 ---

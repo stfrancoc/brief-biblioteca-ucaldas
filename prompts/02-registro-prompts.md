@@ -56,19 +56,19 @@ Creé la carpeta `prompts/` en la raíz del proyecto. Generé el archivo `01-cre
 
 **¿La respuesta cumplió con lo que pedí?**
 
-- [ ] Completamente.
+- [x] Completamente.
 - [ ] Parcialmente. Faltó: [...]
 - [ ] No, se desvió. Hizo: [...]
 
 **¿La acepté tal cual o la modifiqué?**
 
-- [ ] Tal cual.
+- [x] Tal cual.
 - [ ] La modifiqué a mano. Cambios: [...]
 - [ ] Le pedí corrección con un prompt nuevo (ver prompt #[N+1]).
 - [ ] La rechacé completamente. Razón: [...]
 
 **¿Qué aprendí de esta interacción?**
 
-[ ]
+[que hay que ser detalladas con la informacion que mandamos en el prompt y sirve mucho corroborarla o mejorar con por otra herramienta para complementar y que no hallan ambiguedades ]
 
 ---
